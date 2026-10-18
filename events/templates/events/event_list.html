@@ -1,0 +1,18 @@
+<h1>Your Events</h1>
+
+<p>
+    <a href="{% url 'event_create' %}">Create a new event</a>
+</p>
+
+{% for event in events %}
+    <hr>
+
+    <p><strong>Description:</strong> {{ event.description }}</p>
+    <p><strong>Price:</strong> {{ event.price }}</p>
+    <p><strong>Available tickets:</strong> {{ event.available_tickets }}</p>
+
+{% empty %}
+    <p>You haven't created any events yet.</p>
+{% endfor %}
+
+<p><a href="/">Back to home</a></p>

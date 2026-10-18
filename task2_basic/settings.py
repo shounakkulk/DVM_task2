@@ -11,20 +11,19 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5f%*d6p*i)s9f6trp8xbp3et!icw#ei@7vzfwp1=h6v@6u!dmh'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = []
 
 
@@ -37,6 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
+    'events',
+    'wallet',
+    'bookings',
+
 ]
 
 MIDDLEWARE = [
@@ -72,12 +76,18 @@ WSGI_APPLICATION = 'task2_basic.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
+
 
 
 # Password validation
@@ -125,3 +135,7 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "login"
