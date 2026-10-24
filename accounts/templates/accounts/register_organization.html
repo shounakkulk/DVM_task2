@@ -1,0 +1,26 @@
+<h1>Register Your Organization</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        <label for="organization_name">
+            Organization name:
+        </label>
+        <input
+            type="text"
+            name="organization_name"
+            id="organization_name"
+            required
+        >
+    </p>
+
+    {{ form.as_p }}
+
+    <button type="submit">Register Organization</button>
+</form>
+
+<p>
+    Already registered?
+    <a href="{% url 'login' %}">Log in</a>
+</p>

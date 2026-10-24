@@ -10,6 +10,11 @@
     <p><strong>Description:</strong> {{ event.description }}</p>
     <p><strong>Price:</strong> {{ event.price }}</p>
     <p><strong>Available tickets:</strong> {{ event.available_tickets }}</p>
+    
+    <a href="{% url 'event_edit' event.id %}">Edit</a>
+
+    <a href="{% url 'event_delete' event.id %}">Delete</a>
+
 
 {% empty %}
     <p>You haven't created any events yet.</p>

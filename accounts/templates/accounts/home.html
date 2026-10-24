@@ -1,8 +1,35 @@
-<h1>Welcome to the app</h1>
 
-<p>You are logged in as {{ request.user.username }}.</p>
+<h1>User Dashboard</h1>
+
+<p>Welcome, {{ request.user.username }}!</p>
+
+<hr>
+
+<h2>Explore</h2>
+<ul>
+    <li><a href="{% url 'event_list' %}">Browse Events</a></li>
+</ul>
+
+<h2>My Account</h2>
+<ul>
+    <li>Wallet balance</li>
+    <li>My bookings</li>
+    <li>Active tickets</li>
+    <li>Transaction history</li>
+</ul>
+
+<hr>
+
+<p>
+    Want to host events?
+    <a href="{% url 'register_organization' %}">
+        Register an Organization
+    </a>
+</p>
+
 
 <form method="post" action="{% url 'logout' %}">
     {% csrf_token %}
-    <button type="submit">Log out</button>
+    <button type="submit">Log Out</button>
 </form>
+

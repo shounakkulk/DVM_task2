@@ -2,3 +2,26 @@
 
 <p>Welcome, {{ organization.name }}.</p>
 <p>Logged in as {{ request.user.username }}.</p>
+
+<hr>
+
+<h2>Event Management</h2>
+
+<ul>
+    <li>
+        <a href="{% url 'event_list' %}">View My Events</a>
+    </li>
+    <li>
+        <a href="{% url 'event_create' %}">Create New Event</a>
+    </li>
+</ul>
+
+
+<hr>
+
+
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Log Out</button>
+</form>
+

@@ -1,0 +1,11 @@
+<h1>Delete Event</h1>
+
+<p>Are you sure you want to delete this event?</p>
+<p>{{ event.description }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+</form>
+
+<a href="{% url 'event_list' %}">Cancel</a>
