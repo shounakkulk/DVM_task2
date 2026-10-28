@@ -1,0 +1,22 @@
+<h1>My Wallet</h1>
+
+<hr>
+
+<h2>Available Balance</h2>
+<h1>₹{{ wallet.balance }}</h1>
+
+<hr>
+
+<p>
+    <a href="{% url 'add_money' %}">Add Money</a>
+</p>
+
+<p>
+    <a href="{% url 'transaction_history' %}">
+        View Transaction History
+    </a>
+</p>
+
+<p>
+    <a href="{% url 'home' %}">Back to Dashboard</a>
+</p>

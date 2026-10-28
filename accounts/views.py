@@ -1,4 +1,3 @@
-
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
@@ -7,6 +6,22 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
 from .models import Organization
+from decimal import Decimal
+
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import F
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+from .forms import AddMoneyForm
+from .models import Organization, Wallet, Transaction
+
+def is_ordinary_user(user):
+    return (
+        user.is_authenticated
+        and not user.groups.filter(name="Organizations").exists()
+    )
 
 
 def register(request):
@@ -95,4 +110,78 @@ def organization_dashboard(request):
         request,
         "accounts/organization_dashboard.html",
         {"organization": organization},
+    )
+@login_required
+def add_money(request):
+    if not is_ordinary_user(request.user):
+            return HttpResponseForbidden(
+                "Only ordinary users can access the wallet."
+            )
+    if request.method == "POST":
+        form = AddMoneyForm(request.POST)
+
+        if form.is_valid():
+            amount = form.cleaned_data["amount"]
+
+            with transaction.atomic():
+                wallet, created = Wallet.objects.get_or_create(
+                    user=request.user
+                )
+
+                Wallet.objects.filter(pk=wallet.pk).update(
+                    balance=F("balance") + amount
+                )
+
+                Transaction.objects.create(
+                    wallet=wallet,
+                    transaction_type=Transaction.DEPOSIT,
+                    amount=amount,
+                    description="Added money to wallet",
+                )
+
+            messages.success(
+                request,
+                f"₹{amount} added to your wallet successfully!",
+            )
+            return redirect("home")
+    else:
+        form = AddMoneyForm()
+
+    return render(
+        request,
+        "accounts/add_money.html",
+        {"form": form},
+    )
+@login_required
+def transaction_history(request):
+    if not is_ordinary_user(request.user):
+        return HttpResponseForbidden(
+            "Only ordinary users can access the wallet."
+        )
+    wallet, created = Wallet.objects.get_or_create(
+        user=request.user
+    )
+
+    transactions = wallet.transactions.order_by("-created_at")
+
+    return render(
+        request,
+        "accounts/transaction_history.html",
+        {"transactions": transactions},
+    )
+
+@login_required
+def wallet_balance(request):
+    if not is_ordinary_user(request.user):
+            return HttpResponseForbidden(
+                "Only ordinary users can access the wallet."
+            )
+    wallet, created = Wallet.objects.get_or_create(
+        user=request.user
+    )
+
+    return render(
+        request,
+        "accounts/wallet_balance.html",
+        {"wallet": wallet},
     )

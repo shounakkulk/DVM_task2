@@ -1,0 +1,34 @@
+<h1>My Bookings</h1>
+
+<hr>
+
+{% if bookings %}
+    {% for booking in bookings %}
+        <div>
+            <h2>{{ booking.event.description }}</h2>
+
+            <p>
+                <strong>Tickets booked:</strong>
+                {{ booking.quantity }}
+            </p>
+
+            <p>
+                <strong>Total paid:</strong>
+                ₹{{ booking.total_price }}
+            </p>
+
+            <p>
+                <strong>Booking date:</strong>
+                {{ booking.created_at|date:"d M Y, h:i A" }}
+            </p>
+        </div>
+
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>You haven't booked any events yet.</p>
+{% endif %}
+
+<p><a href="{% url 'event_list' %}">Discover Events</a></p>
+<p><a href="{% url 'wallet_balance' %}">My Wallet</a></p>
+<p><a href="{% url 'home' %}">Back to Dashboard</a></p>

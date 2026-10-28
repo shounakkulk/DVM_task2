@@ -1,0 +1,30 @@
+<h1>My Events</h1>
+
+<p>Manage the events created by your organization.</p>
+
+<p>
+    <a href="{% url 'event_create' %}">Create New Event</a>
+</p>
+
+<hr>
+
+{% if events %}
+    <ul>
+        {% for event in events %}
+            <li>
+                <h3>{{ event.description }}</h3>
+                <p>Price: ₹{{ event.price }}</p>
+                <p>Available tickets: {{ event.available_tickets }}</p>
+
+                <a href="{% url 'event_edit' event.id %}">Edit</a>
+
+                <a href="{% url 'event_delete' event.id %}">Delete</a>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You haven't created any events yet.</p>
+{% endif %}
+
+<p><a href="{% url 'home' %}">Back to Dashboard</a></p>

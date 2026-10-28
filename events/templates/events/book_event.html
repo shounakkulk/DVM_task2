@@ -1,0 +1,19 @@
+<h1>Book Event</h1>
+
+<h2>{{ event.description }}</h2>
+
+<p>Price per ticket: ₹{{ event.price }}</p>
+<p>Available tickets: {{ event.available_tickets }}</p>
+
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Confirm Booking</button>
+</form>
+
+<p>
+    <a href="{% url 'event_list' %}">Back to Events</a>
+</p>

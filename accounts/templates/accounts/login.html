@@ -1,13 +1,19 @@
-<h1>Log In</h1>
+<h1>Login</h1>
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-
-    <button type="submit">Log In</button>
+    <button type="submit">Login</button>
 </form>
 
-<p>
-    Don't have an account?
-    <a href="{% url 'register' %}">Register</a>
-</p>
+<hr>
+
+<h2>New here?</h2>
+
+<p>Want to attend events?</p>
+<a href="{% url 'register' %}">Register as a User</a>
+
+<p>Want to host events?</p>
+<a href="{% url 'register_organization' %}">
+    Register as an Organization
+</a>

@@ -5,6 +5,12 @@
 
 <hr>
 
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
 <h2>Explore</h2>
 <ul>
     <li><a href="{% url 'event_list' %}">Browse Events</a></li>
@@ -12,20 +18,14 @@
 
 <h2>My Account</h2>
 <ul>
-    <li>Wallet balance</li>
-    <li>My bookings</li>
-    <li>Active tickets</li>
-    <li>Transaction history</li>
+    <li><a href="{% url 'wallet_balance' %}">Wallet balance</a></li>
+    <li> <a href="{% url 'my_bookings' %}">My Bookings</a></li>
+    <li><a href="{% url 'transaction_history' %}">Transaction history</a></li>
+    <li><a href="{% url 'add_money' %}">Add Money to Wallet</a></li>
 </ul>
 
 <hr>
 
-<p>
-    Want to host events?
-    <a href="{% url 'register_organization' %}">
-        Register an Organization
-    </a>
-</p>
 
 
 <form method="post" action="{% url 'logout' %}">
