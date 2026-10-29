@@ -4,6 +4,12 @@
     <a href="{% url 'event_create' %}">Create New Event</a>
 </p>
 
+<p>
+    <a href="{% url 'organization_dashboard' %}">
+        Back to Organization Dashboard
+    </a>
+</p>
+
 {% for event in events %}
     <div>
         <h2>{{ event.description }}</h2>

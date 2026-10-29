@@ -19,4 +19,10 @@ urlpatterns = [
         views.mark_booking_consumed,
         name="mark_booking_consumed",
     ),
+
+    path(
+        "organization/analytics/",
+        views.organization_analytics,
+        name="organization_analytics",
+    ),
 ]

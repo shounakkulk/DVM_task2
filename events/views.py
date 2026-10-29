@@ -406,3 +406,70 @@ def mark_booking_consumed(request, booking_id):
         )
 
     return redirect("organization_bookings")
+
+@login_required
+def organization_analytics(request):
+    organization = get_user_organization(request.user)
+
+    if organization is None:
+        return HttpResponseForbidden(
+            "You do not have permission to view analytics."
+        )
+
+    events = Event.objects.filter(
+        organization=organization
+    ).prefetch_related("slots")
+
+    bookings = Booking.objects.filter(
+        event__organization=organization
+    )
+
+    summary = bookings.aggregate(
+        total_revenue=Sum("total_price"),
+        total_places_booked=Sum("quantity"),
+    )
+
+    total_events = events.count()
+    total_bookings = bookings.count()
+    total_revenue = summary["total_revenue"] or 0
+    total_places_booked = summary["total_places_booked"] or 0
+
+    consumed_bookings = bookings.filter(is_consumed=True).count()
+    pending_bookings = bookings.filter(is_consumed=False).count()
+
+    for event in events:
+        event.total_bookings = event.bookings.count()
+        event.places_booked = (
+            event.bookings.aggregate(total=Sum("quantity"))["total"] or 0
+        )
+        event.booking_revenue = (
+            event.bookings.aggregate(total=Sum("total_price"))["total"] or 0
+        )
+
+        if event.event_type == Event.TICKET:
+            event.remaining_inventory = event.available_tickets
+
+        else:
+            for slot in event.slots.all():
+                slot.places_booked = (
+                    slot.bookings.aggregate(total=Sum("quantity"))["total"] or 0
+                )
+                slot.remaining_capacity = max(
+                    0, slot.capacity - slot.places_booked
+                )
+
+    context = {
+        "total_events": total_events,
+        "total_bookings": total_bookings,
+        "total_revenue": total_revenue,
+        "total_places_booked": total_places_booked,
+        "consumed_bookings": consumed_bookings,
+        "pending_bookings": pending_bookings,
+        "events": events,
+    }
+
+    return render(
+        request,
+        "events/organization_analytics.html",
+        context,
+    )

@@ -1,0 +1,65 @@
+<h1>Event Analytics</h1>
+
+<p>
+    <a href="{% url 'organization_dashboard' %}">
+        Back to Organization Dashboard
+    </a>
+</p>
+
+<h2>Overall Statistics</h2>
+
+<ul>
+    <li><strong>Total events:</strong> {{ total_events }}</li>
+    <li><strong>Total bookings:</strong> {{ total_bookings }}</li>
+    <li><strong>Total tickets / places booked:</strong> {{ total_places_booked }}</li>
+    <li><strong>Total booking revenue:</strong> ₹{{ total_revenue|floatformat:2 }}</li>
+    <li><strong>Consumed bookings:</strong> {{ consumed_bookings }}</li>
+    <li><strong>Pending bookings:</strong> {{ pending_bookings }}</li>
+</ul>
+
+<hr>
+
+<h2>Event-wise Statistics</h2>
+
+{% for event in events %}
+    <h3>{{ event.description }}</h3>
+
+    <p>
+        <strong>Type:</strong>
+        {% if event.event_type == "SLOT" %}
+            Slot-based
+        {% else %}
+            Ticket-based
+        {% endif %}
+    </p>
+
+    <p><strong>Bookings:</strong> {{ event.total_bookings }}</p>
+    <p><strong>Places booked:</strong> {{ event.places_booked }}</p>
+    <p><strong>Booking revenue:</strong> ₹{{ event.booking_revenue|floatformat:2 }}</p>
+
+    {% if event.event_type == "TICKET" %}
+        <p><strong>Tickets remaining:</strong> {{ event.remaining_inventory }}</p>
+    {% else %}
+        <h4>Slot Occupancy</h4>
+
+        {% for slot in event.slots.all %}
+            <p>
+                {{ slot.start_time|date:"d M Y, h:i A" }}
+                –
+                {{ slot.end_time|date:"h:i A" }}
+            </p>
+
+            <p><strong>Capacity:</strong> {{ slot.capacity }}</p>
+            <p><strong>Places booked:</strong> {{ slot.places_booked }}</p>
+            <p><strong>Remaining capacity:</strong> {{ slot.remaining_capacity }}</p>
+
+            <hr>
+        {% empty %}
+            <p>No slots created.</p>
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+{% empty %}
+    <p>You haven't created any events yet.</p>
+{% endfor %}
