@@ -1,4 +1,4 @@
-# Going-Out and Lifestyle Web Application
+# Round 2 Basic Track
 
 A Django-based web application for discovering and booking events, managing wallet balances, and handling event operations for organizations. The application supports both ticket-based events, such as concerts and movies, and slot-based events, such as sports facilities that can be booked for specific time slots.
 
