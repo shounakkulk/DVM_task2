@@ -8,11 +8,6 @@ from events.views import my_bookings
 urlpatterns = [
     path("register/", views.register, name="register"),
     path(
-        "register/organization/",
-        views.register_organization,
-        name="register_organization",
-    ),
-    path(
         "login/",
         auth_views.LoginView.as_view(
             template_name="accounts/login.html"
@@ -23,6 +18,11 @@ urlpatterns = [
         "logout/",
         auth_views.LogoutView.as_view(),
         name="logout",
+    ),
+    path(
+        "superuser-dashboard/",
+        views.superuser_dashboard,
+        name="superuser_dashboard",
     ),
     path(
         "add-money/", 
@@ -43,5 +43,10 @@ urlpatterns = [
         "my-bookings/",
         my_bookings,
         name="my_bookings",
+    ),
+    path(
+        "create-organization/",
+        views.create_organization_account,
+        name="create_organization_account",
     ),
 ]

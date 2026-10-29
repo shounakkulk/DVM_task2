@@ -1,28 +1,36 @@
-<h1>Discover Events</h1>
-<hr>
+<h1>Events</h1>
 
-{% if events %}
 {% for event in events %}
-<div>
-<h2>{{ event.description }}</h2>
-        <p>By {{event.organization}}</p>
+    <div>
+        <h2>{{ event.description }}</h2>
 
-        <p><strong>Ticket Price:</strong> ₹{{ event.price }}</p>
+        <p>Price: ₹{{ event.price }}</p>
 
-        <p><strong>Tickets Available:</strong> {{ event.available_tickets }}</p>
+        {% if event.event_type == "SLOT" %}
+            <h3>Available Slots</h3>
 
-       {% if user.is_authenticated %}
-            <a href="{% url 'book_event' event.id %}">
-                Book Tickets
-            </a>
-        {%endif %}
-</div>
+            {% for slot in event.display_slots %}
+                <p>
+                    {{ slot.start_time|date:"d M Y, h:i A" }}
+                    –
+                    {{ slot.end_time|date:"h:i A" }}
+                    | {{ slot.remaining_capacity }} places remaining
+                </p>
+            {% empty %}
+                <p>No slots available.</p>
+            {% endfor %}
 
+        {% else %}
+            <p>Available tickets: {{ event.available_tickets }}</p>
+        {% endif %}
+
+        {% if not user.groups.all %}
+            <a href="{% url 'book_event' event.id %}">Book Event</a>
+        {% else %}
+            <a href="{% url 'book_event' event.id %}">Book Event</a>
+        {% endif %}
+    </div>
     <hr>
+{% empty %}
+    <p>No events found.</p>
 {% endfor %}
-
-{% else %}
-<p>No events are available right now. Check back later!</p>
-{% endif %}
-
-<p><a href="{% url 'home' %}">Back to Dashboard</a></p>

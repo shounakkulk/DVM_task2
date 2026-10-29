@@ -1,0 +1,53 @@
+<h1>Purchased Tickets and Bookings</h1>
+
+<p>
+    <a href="{% url 'organization_dashboard' %}">
+        Back to Organization Dashboard
+    </a>
+</p>
+
+{% for booking in bookings %}
+    <div>
+        <h3>{{ booking.event.description }}</h3>
+
+        <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+        <p><strong>Customer:</strong> {{ booking.user.username }}</p>
+        <p><strong>Quantity:</strong> {{ booking.quantity }}</p>
+        <p><strong>Total paid:</strong> ₹{{ booking.total_price }}</p>
+        <p>
+            <strong>Booking date:</strong>
+            {{ booking.created_at|date:"d M Y, h:i A" }}
+        </p>
+
+        {% if booking.slot %}
+            <p>
+                <strong>Slot:</strong>
+                {{ booking.slot.start_time|date:"d M Y, h:i A" }}
+                –
+                {{ booking.slot.end_time|date:"h:i A" }}
+            </p>
+        {% endif %}
+
+        {% if booking.is_consumed %}
+            <p><strong>Status:</strong> Consumed</p>
+            <p>
+                <strong>Consumed at:</strong>
+                {{ booking.consumed_at|date:"d M Y, h:i A" }}
+            </p>
+        {% else %}
+            <p><strong>Status:</strong> Not consumed</p>
+
+            <form
+                method="post"
+                action="{% url 'mark_booking_consumed' booking.id %}"
+            >
+                {% csrf_token %}
+                <button type="submit">Mark as Consumed</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <hr>
+{% empty %}
+    <p>No bookings have been made for your events yet.</p>
+{% endfor %}

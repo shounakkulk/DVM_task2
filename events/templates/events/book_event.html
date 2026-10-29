@@ -1,19 +1,39 @@
 <h1>Book Event</h1>
 
 <h2>{{ event.description }}</h2>
+<p>Price per ticket / place: ₹{{ event.price }}</p>
 
-<p>Price per ticket: ₹{{ event.price }}</p>
-<p>Available tickets: {{ event.available_tickets }}</p>
+{% if event.event_type == "SLOT" %}
+    <h3>Select a Slot</h3>
 
-<hr>
+    {% if slots %}
+        <label for="slot">Available slots:</label>
+    {% else %}
+        <p>No slots have been created for this event yet.</p>
+    {% endif %}
+{% else %}
+    <p>Available tickets: {{ event.available_tickets }}</p>
+{% endif %}
 
 <form method="post">
     {% csrf_token %}
+
+    {% if event.event_type == "SLOT" and slots %}
+        <select name="slot" id="slot" required>
+            <option value="">-- Select a slot --</option>
+
+            {% for slot in slots %}
+                <option value="{{ slot.id }}">
+                    {{ slot.start_time }} to {{ slot.end_time }}
+                    (Capacity: {{ slot.capacity }})
+                </option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
     {{ form.as_p }}
 
     <button type="submit">Confirm Booking</button>
 </form>
 
-<p>
-    <a href="{% url 'event_list' %}">Back to Events</a>
-</p>
+<p><a href="{% url 'event_list' %}">Back to events</a></p>

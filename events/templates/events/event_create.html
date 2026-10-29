@@ -2,9 +2,89 @@
 
 <form method="post">
     {% csrf_token %}
+
+    <h3>Event Details</h3>
     {{ form.as_p }}
 
+    <div id="slot-fields">
+        <h3>Event Slots</h3>
+
+        {{ slot_formset.management_form }}
+
+        <div id="slot-container">
+            {% for slot_form in slot_formset %}
+                <div class="slot-form">
+                    <h4>Slot</h4>
+                    {{ slot_form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-slot">Add Another Slot</button>
+    </div>
+
+    <br>
     <button type="submit">Create Event</button>
 </form>
 
 <p><a href="{% url 'my_events' %}">Back to your events</a></p>
+
+<script>
+    const eventType = document.getElementById("id_event_type");
+    const slotFields = document.getElementById("slot-fields");
+    const slotContainer = document.getElementById("slot-container");
+    const addSlotButton = document.getElementById("add-slot");
+
+    const totalForms = document.getElementById("id_slots-TOTAL_FORMS");
+
+   function toggleSlotFields() {
+    const isSlotEvent = eventType.value === "SLOT";
+
+    slotFields.style.display = isSlotEvent ? "block" : "none";
+
+    const ticketsField = document.getElementById("id_available_tickets");
+
+    if (ticketsField) {
+        const ticketsContainer = ticketsField.closest("p");
+
+        if (ticketsContainer) {
+            ticketsContainer.style.display = isSlotEvent ? "none" : "block";
+        }
+
+        ticketsField.required = !isSlotEvent;
+        if (isSlotEvent) {
+            ticketsField.value = "0";
+        }
+    }
+}
+
+eventType.addEventListener("change", toggleSlotFields);
+toggleSlotFields();
+
+    eventType.addEventListener("change", toggleSlotFields);
+    toggleSlotFields();
+
+    addSlotButton.addEventListener("click", function () {
+        const formCount = parseInt(totalForms.value);
+
+        const newForm = slotContainer.children[0].cloneNode(true);
+
+        newForm.innerHTML = newForm.innerHTML.replace(
+            /slots-(\d+)-/g,
+            "slots-" + formCount + "-"
+        );
+
+        newForm.querySelectorAll("input").forEach(function (input) {
+            if (input.type !== "hidden") {
+                input.value = "";
+            }
+        });
+
+        newForm.querySelectorAll("select").forEach(function (select) {
+            select.selectedIndex = 0;
+        });
+
+        slotContainer.appendChild(newForm);
+        totalForms.value = formCount + 1;
+    });
+</script>
