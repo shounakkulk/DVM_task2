@@ -1,8 +1,4 @@
-# Round 2 Basic Track
-
-A Django-based web application for discovering and booking events, managing wallet balances, and handling event operations for organizations. The application supports both ticket-based events, such as concerts and movies, and slot-based events, such as sports facilities that can be booked for specific time slots.
-
-This project was developed as part of **DVM Backend Round 2 — Basic Track**, covering Phase 1 (Project Setup) and Phase 2 (Core Functionality).
+# Round 2 Basic Trac
 
 ## Table of Contents
 
@@ -450,8 +446,6 @@ The Django administrative interface is available at:
 
 Use the superuser credentials created earlier to log in.
 
-> **Note:** The development server is intended for local development and testing, not production deployment.
-
 ## Usage Guide
 
 ### For Regular Users
@@ -511,24 +505,6 @@ If an error occurs during the atomic operation, database changes made within tha
 Using row-level locks helps coordinate concurrent booking attempts. The precise guarantees depend on the database backend and its locking behaviour; PostgreSQL is used for this project.
 
 Wallet deposits are simulated. No real payment gateway or actual money transfer is involved.
-
-## Limitations and Future Improvements
-
-The application implements the core booking and organization-management workflows required for the first two phases. It can be extended further in several areas.
-
-Potential improvements include:
-
-- Integrating a real payment gateway with payment verification and appropriate safeguards.
-- Adding email or other booking confirmations.
-- Introducing a separate ticket entity if individual tickets need independent IDs and consumption status.
-- Supporting partial consumption when a booking contains multiple tickets.
-- Adding cancellation, refunds, and inventory restoration.
-- Adding more detailed analytics and visualizations.
-- Improving automated tests for authentication, authorization, booking capacity, and concurrent transactions.
-- Reviewing Django's deployment checklist and the OWASP Top 10 before production deployment.
-- Configuring production-grade settings, HTTPS, secret management, logging, and monitoring.
-
-The current implementation is a foundational event-booking application intended to demonstrate Django development, relational data modelling, authentication, authorization, transaction handling, and the core Phase 1 and Phase 2 requirements.
 
 ## References
 
