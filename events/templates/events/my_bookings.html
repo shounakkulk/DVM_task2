@@ -1,3 +1,4 @@
+
 <h1>My Bookings</h1>
 
 <hr>
@@ -7,10 +8,45 @@
         <div>
             <h2>{{ booking.event.description }}</h2>
 
-            <p>
-                <strong>Tickets booked:</strong>
-                {{ booking.quantity }}
-            </p>
+            {% if booking.event.event_type == "SLOT" %}
+                <p>
+                    <strong>Booking Type:</strong>
+                    Slot-based
+                </p>
+
+                {% if booking.slot %}
+                    <p>
+                        <strong>Slot Start:</strong>
+                        {{ booking.slot.start_time|date:"d M Y, h:i A" }}
+                    </p>
+
+                    <p>
+                        <strong>Slot End:</strong>
+                        {{ booking.slot.end_time|date:"d M Y, h:i A" }}
+                    </p>
+                {% else %}
+                    <p>
+                        <strong>Slot:</strong>
+                        No longer available
+                    </p>
+                {% endif %}
+
+                <p>
+                    <strong>Places booked:</strong>
+                    {{ booking.quantity }}
+                </p>
+
+            {% else %}
+                <p>
+                    <strong>Booking Type:</strong>
+                    Ticket-based
+                </p>
+
+                <p>
+                    <strong>Tickets booked:</strong>
+                    {{ booking.quantity }}
+                </p>
+            {% endif %}
 
             <p>
                 <strong>Total paid:</strong>
@@ -20,6 +56,15 @@
             <p>
                 <strong>Booking date:</strong>
                 {{ booking.created_at|date:"d M Y, h:i A" }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {% if booking.is_consumed %}
+                    Consumed
+                {% else %}
+                    Active
+                {% endif %}
             </p>
         </div>
 

@@ -1,11 +1,19 @@
-<h2>Create On-ground Team Account</h2>
+<h1>Create Organization Account</h1>
 
 <form method="post">
     {% csrf_token %}
 
     {{ form.as_p }}
 
-    <button type="submit">Create Account</button>
+    <label for="organization_name">Organization Name:</label>
+    <input
+        type="text"
+        name="organization_name"
+        id="organization_name"
+        required
+    >
+
+    <button type="submit">Create Organization</button>
 </form>
 
 <a href="{% url 'home' %}">Back to Home</a>

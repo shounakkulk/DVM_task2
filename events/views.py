@@ -143,7 +143,7 @@ def event_create(request):
                             capacity=slot_data["capacity"],
                         )
 
-            messages.success(request, "Event created successfully!")
+            messages.success(request, f"Event {event.description} created successfully!")
             return redirect("my_events")
 
     else:
@@ -158,6 +158,12 @@ def event_create(request):
             "slot_formset": slot_formset,
         },
     )
+
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
+
 
 @login_required
 def event_edit(request, event_id):
@@ -177,18 +183,47 @@ def event_edit(request, event_id):
     if request.method == "POST":
         form = EventForm(request.POST, instance=event)
 
-        if form.is_valid():
-            form.save()
+        if event.event_type == Event.SLOT:
+            slot_formset = EventSlotFormSet(
+                request.POST,
+                instance=event,
+            )
+        else:
+            slot_formset = None
+
+        form_is_valid = form.is_valid()
+        slots_are_valid = (
+            slot_formset.is_valid()
+            if slot_formset is not None
+            else True
+        )
+
+        if form_is_valid and slots_are_valid:
+            with transaction.atomic():
+                form.save()
+
+                if slot_formset is not None:
+                    slot_formset.save()
+
             return redirect("my_events")
+
     else:
         form = EventForm(instance=event)
+
+        if event.event_type == Event.SLOT:
+            slot_formset = EventSlotFormSet(instance=event)
+        else:
+            slot_formset = None
 
     return render(
         request,
         "events/event_edit.html",
-        {"form": form, "event": event},
+        {
+            "form": form,
+            "event": event,
+            "slot_formset": slot_formset,
+        },
     )
-
 
 @login_required
 def event_delete(request, event_id):
@@ -316,7 +351,7 @@ def book_event(request, event_id):
 
                         messages.success(
                             request,
-                            f"Successfully booked {quantity} place(s) "
+                            f"Successfully booked {quantity} place(s) for {event.description} "
                             f"for ₹{total_price}.",
                         )
                         return redirect("event_list")

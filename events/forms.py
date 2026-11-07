@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import formset_factory
+from django.forms import formset_factory, inlineformset_factory
 from .models import Event, EventSlot
 
 
@@ -47,34 +47,30 @@ class EventSlotForm(forms.ModelForm):
         fields = ["start_time", "end_time", "capacity"]
         widgets = {
             "start_time": forms.DateTimeInput(
-                attrs={"type": "datetime-local"}
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
             ),
             "end_time": forms.DateTimeInput(
-                attrs={"type": "datetime-local"}
+                attrs={"type": "datetime-local"},
+                format="%Y-%m-%dT%H:%M",
             ),
         }
-        labels = {
-            "start_time": "Slot start time",
-            "end_time": "Slot end time",
-            "capacity": "Maximum bookings for this slot",
-        }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        start_time = cleaned_data.get("start_time")
-        end_time = cleaned_data.get("end_time")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        if start_time and end_time and end_time <= start_time:
-            self.add_error(
-                "end_time",
-                "The end time must be after the start time.",
-            )
-
-        return cleaned_data
+        self.fields["start_time"].input_formats = [
+            "%Y-%m-%dT%H:%M"
+        ]
+        self.fields["end_time"].input_formats = [
+            "%Y-%m-%dT%H:%M"
+        ]
 
 
-EventSlotFormSet = formset_factory(
-    EventSlotForm,
-    extra=1,
+EventSlotFormSet = inlineformset_factory(
+    Event,
+    EventSlot,
+    form=EventSlotForm,
+    extra=0,
     can_delete=True,
 )

@@ -2,8 +2,98 @@
 
 <form method="post">
     {% csrf_token %}
+
+    <h2>Event Details</h2>
+
     {{ form.as_p }}
+
+    {% if event.event_type == "SLOT" %}
+    <hr>
+
+    <h2>Manage Slots</h2>
+
+    <p>Edit existing slots or add new ones.</p>
+
+    {{ slot_formset.management_form }}
+
+    <div id="slot-container">
+        {% for slot_form in slot_formset %}
+            <div class="slot-form">
+                <h3>Slot {{ forloop.counter }}</h3>
+
+                {% for hidden in slot_form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
+                {{ slot_form.non_field_errors }}
+
+                <p>
+                    <label>Start Time:</label>
+                    {{ slot_form.start_time }}
+                    {{ slot_form.start_time.errors }}
+                </p>
+
+                <p>
+                    <label>End Time:</label>
+                    {{ slot_form.end_time }}
+                    {{ slot_form.end_time.errors }}
+                </p>
+
+                <p>
+                    <label>Capacity:</label>
+                    {{ slot_form.capacity }}
+                    {{ slot_form.capacity.errors }}
+                </p>
+
+                {% if slot_form.instance.pk %}
+                    <p>
+                        {{ slot_form.DELETE }}
+                        <label>Delete this slot</label>
+                    </p>
+                {% endif %}
+            </div>
+
+            <hr>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-slot">
+        + Add Slot
+    </button>
+
+    <div id="empty-slot-template" style="display: none;">
+        <div class="slot-form">
+            <h3>New Slot</h3>
+
+            {% for hidden in slot_formset.empty_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            <p>
+                <label>Start Time:</label>
+                {{ slot_formset.empty_form.start_time }}
+            </p>
+
+            <p>
+                <label>End Time:</label>
+                {{ slot_formset.empty_form.end_time }}
+            </p>
+
+            <p>
+                <label>Capacity:</label>
+                {{ slot_formset.empty_form.capacity }}
+            </p>
+
+            <button type="button" class="remove-new-slot">
+                Remove Slot
+            </button>
+        </div>
+        <hr>
+    </div>
+{% endif %}
+
     <button type="submit">Save Changes</button>
 </form>
 
-<a href="{% url 'event_list' %}">Cancel</a>
+<a href="{% url 'my_events' %}">Cancel</a>
+

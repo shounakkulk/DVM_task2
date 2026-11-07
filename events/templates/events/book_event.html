@@ -25,7 +25,6 @@
             {% for slot in slots %}
                 <option value="{{ slot.id }}">
                     {{ slot.start_time }} to {{ slot.end_time }}
-                    (Capacity: {{ slot.capacity }})
                 </option>
             {% endfor %}
         </select>
