@@ -1,3 +1,4 @@
+
 <h1>Create an Event</h1>
 
 <form method="post">
@@ -12,12 +13,27 @@
         {{ slot_formset.management_form }}
 
         <div id="slot-container">
+            <div id="empty-slot-form" style="display: none;">
+                <div class="slot-form">
+                    <h4>Slot</h4>
+                    {{ slot_formset.empty_form.as_p }}
+                </div>
+            </div>
+
             {% for slot_form in slot_formset %}
                 <div class="slot-form">
                     <h4>Slot</h4>
                     {{ slot_form.as_p }}
                 </div>
             {% endfor %}
+        </div>
+
+        <!-- Hidden template for creating new slots -->
+        <div id="empty-slot-form" style="display: none;">
+            <div class="slot-form">
+                <h4>Slot</h4>
+                {{ slot_formset.empty_form.as_p }}
+            </div>
         </div>
 
         <button type="button" id="add-slot">Add Another Slot</button>
@@ -36,30 +52,29 @@
     const addSlotButton = document.getElementById("add-slot");
 
     const totalForms = document.getElementById("id_slots-TOTAL_FORMS");
+    const emptySlotForm = document.getElementById("empty-slot-form");
 
-   function toggleSlotFields() {
-    const isSlotEvent = eventType.value === "SLOT";
+    function toggleSlotFields() {
+        const isSlotEvent = eventType.value === "SLOT";
 
-    slotFields.style.display = isSlotEvent ? "block" : "none";
+        slotFields.style.display = isSlotEvent ? "block" : "none";
 
-    const ticketsField = document.getElementById("id_available_tickets");
+        const ticketsField = document.getElementById("id_available_tickets");
 
-    if (ticketsField) {
-        const ticketsContainer = ticketsField.closest("p");
+        if (ticketsField) {
+            const ticketsContainer = ticketsField.closest("p");
 
-        if (ticketsContainer) {
-            ticketsContainer.style.display = isSlotEvent ? "none" : "block";
-        }
+            if (ticketsContainer) {
+                ticketsContainer.style.display = isSlotEvent ? "none" : "block";
+            }
 
-        ticketsField.required = !isSlotEvent;
-        if (isSlotEvent) {
-            ticketsField.value = "0";
+            ticketsField.required = !isSlotEvent;
+
+            if (isSlotEvent) {
+                ticketsField.value = "0";
+            }
         }
     }
-}
-
-eventType.addEventListener("change", toggleSlotFields);
-toggleSlotFields();
 
     eventType.addEventListener("change", toggleSlotFields);
     toggleSlotFields();
@@ -67,24 +82,15 @@ toggleSlotFields();
     addSlotButton.addEventListener("click", function () {
         const formCount = parseInt(totalForms.value);
 
-        const newForm = slotContainer.children[0].cloneNode(true);
+        const emptyForm = document.getElementById("empty-slot-form").innerHTML;
 
-        newForm.innerHTML = newForm.innerHTML.replace(
-            /slots-(\d+)-/g,
-            "slots-" + formCount + "-"
+        const newFormHTML = emptyForm.replace(
+            /__prefix__/g,
+            formCount
         );
 
-        newForm.querySelectorAll("input").forEach(function (input) {
-            if (input.type !== "hidden") {
-                input.value = "";
-            }
-        });
+        slotContainer.insertAdjacentHTML("beforeend", newFormHTML);
 
-        newForm.querySelectorAll("select").forEach(function (select) {
-            select.selectedIndex = 0;
-        });
-
-        slotContainer.appendChild(newForm);
         totalForms.value = formCount + 1;
     });
 </script>
