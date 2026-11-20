@@ -1,0 +1,14 @@
+[project]
+name = "dvm-task2-basic"
+version = "0.1.0"
+description = "DVM Backend Round 2 - Basic Track"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "django",
+    "psycopg[binary]",
+    "django-environ",
+    "gunicorn",
+]
+
+[tool.uv]
+package = false
