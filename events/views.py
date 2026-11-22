@@ -22,10 +22,8 @@ def get_user_organization(user):
 
 @login_required
 def event_list(request):
-    organization = get_user_organization(request.user)
 
-    if organization is not None:
-        events = Event.objects.all()
+    events = Event.objects.all()
 
     for event in events:
         if event.event_type == Event.SLOT:
@@ -90,6 +88,7 @@ def event_create(request):
 
         if form.is_valid():
             event_type = form.cleaned_data["event_type"]
+
             if event_type == Event.SLOT:
                 if not slot_formset.is_valid():
                     return render(
@@ -155,6 +154,7 @@ def event_create(request):
             "slot_formset": slot_formset,
         },
     )
+
 
 @login_required
 def event_edit(request, event_id):
