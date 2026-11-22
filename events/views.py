@@ -25,8 +25,6 @@ def event_list(request):
     organization = get_user_organization(request.user)
 
     if organization is not None:
-        events = Event.objects.filter(organization=organization)
-    else:
         events = Event.objects.all()
 
     for event in events:
@@ -92,7 +90,6 @@ def event_create(request):
 
         if form.is_valid():
             event_type = form.cleaned_data["event_type"]
-
             if event_type == Event.SLOT:
                 if not slot_formset.is_valid():
                     return render(
@@ -158,12 +155,6 @@ def event_create(request):
             "slot_formset": slot_formset,
         },
     )
-
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render
-
 
 @login_required
 def event_edit(request, event_id):

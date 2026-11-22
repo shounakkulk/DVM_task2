@@ -18,7 +18,7 @@ class Event(models.Model):
         related_name="events",
     )
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.PositiveIntegerField()
     available_tickets = models.PositiveIntegerField()
 
     event_type = models.CharField(

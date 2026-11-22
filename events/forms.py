@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import inlineformset_factory
 from .models import Event, EventSlot
 
 
@@ -33,11 +33,6 @@ class EventForm(forms.ModelForm):
         if event_type == Event.SLOT:
             self.fields.pop("available_tickets")
 
-    def clean_price(self):
-        price = self.cleaned_data["price"]
-        if price < 0:
-            raise forms.ValidationError("Price cannot be negative.")
-        return price
 
 class BookingForm(forms.Form):
     quantity = forms.IntegerField(
