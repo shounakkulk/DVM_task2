@@ -33,6 +33,12 @@ class EventForm(forms.ModelForm):
         if event_type == Event.SLOT:
             self.fields.pop("available_tickets")
 
+    def clean_price(self):
+        price = self.cleaned_data["price"]
+        if price < 0:
+            raise forms.ValidationError("Price cannot be negative.")
+        return price
+
 class BookingForm(forms.Form):
     quantity = forms.IntegerField(
         min_value=1,
