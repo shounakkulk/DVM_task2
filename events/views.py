@@ -249,10 +249,6 @@ def book_event(request, event_id):
             "Organization accounts cannot book events."
         )
 
-    event = get_object_or_404(Event, id=event_id)
-
-    slots = EventSlot.objects.filter(event=event).order_by("start_time")
-
     if request.method == "POST":
         form = BookingForm(request.POST)
 
@@ -261,8 +257,8 @@ def book_event(request, event_id):
             slot_id = request.POST.get("slot")
 
             with transaction.atomic():
-                event = Event.objects.select_for_update().get(id=event_id)
-
+                event = get_object_or_404(Event, id=event_id)
+                slots = EventSlot.objects.filter(event=event).order_by("start_time")
                 slot = None
 
                 if event.event_type == Event.SLOT:
