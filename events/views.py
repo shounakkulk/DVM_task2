@@ -242,6 +242,8 @@ def event_delete(request, event_id):
     )
 
 
+
+
 @login_required
 def book_event(request, event_id):
     if request.user.groups.filter(name="Organizations").exists():
@@ -251,100 +253,114 @@ def book_event(request, event_id):
 
     if request.method == "POST":
         form = BookingForm(request.POST)
-
-        if form.is_valid():
-            quantity = form.cleaned_data["quantity"]
-            slot_id = request.POST.get("slot")
-
-            with transaction.atomic():
-                event = get_object_or_404(Event, id=event_id)
-                slots = EventSlot.objects.filter(event=event).order_by("start_time")
-                slot = None
-
-                if event.event_type == Event.SLOT:
-                    if not slot_id:
-                        form.add_error(None, "Please select a slot.")
-                    else:
-                        slot = EventSlot.objects.select_for_update().filter(
-                            id=slot_id,
-                            event=event,
-                        ).first()
-
-                        if slot is None:
-                            form.add_error(None, "Please select a valid slot.")
-                        else:
-                            already_booked = Booking.objects.filter(
-                                slot=slot
-                            ).aggregate(
-                                total=models.Sum("quantity")
-                            )["total"] or 0
-
-                            if quantity > slot.capacity - already_booked:
-                                form.add_error(
-                                    "quantity",
-                                    "Not enough places remain in this slot.",
-                                )
-
-                elif quantity > event.available_tickets:
-                    form.add_error(
-                        "quantity",
-                        "Not enough tickets are available.",
-                    )
-
-                if not form.errors:
-                    wallet, created = Wallet.objects.get_or_create(
-                        user=request.user
-                    )
-                    wallet = Wallet.objects.select_for_update().get(
-                        id=wallet.id
-                    )
-
-                    total_price = event.price * quantity
-
-                    if wallet.balance < total_price:
-                        form.add_error(
-                            None,
-                            "Insufficient wallet balance. Please add money.",
-                        )
-                    else:
-                        Wallet.objects.filter(pk=wallet.pk).update(
-                            balance=F("balance") - total_price
-                        )
-
-                        if event.event_type == Event.TICKET:
-                            Event.objects.filter(pk=event.pk).update(
-                                available_tickets=(
-                                    F("available_tickets") - quantity
-                                )
-                            )
-
-                        Booking.objects.create(
-                            user=request.user,
-                            event=event,
-                            slot=slot,
-                            quantity=quantity,
-                            total_price=total_price,
-                        )
-
-                        WalletTransaction.objects.create(
-                            wallet=wallet,
-                            transaction_type=WalletTransaction.BOOKING,
-                            amount=total_price,
-                            description=(
-                                f"Booked {quantity} place(s) for "
-                                f"{event.description[:150]}"
-                            ),
-                        )
-
-                        messages.success(
-                            request,
-                            f"Successfully booked {quantity} place(s) for {event.description} "
-                            f"for ₹{total_price}.",
-                        )
-                        return redirect("event_list")
-
     else:
         form = BookingForm()
+
+    if request.method == "POST" and form.is_valid():
+        quantity = form.cleaned_data["quantity"]
+        slot_id = request.POST.get("slot")
+
+        with transaction.atomic():
+            event = get_object_or_404(
+                Event.objects.select_for_update(),
+                id=event_id
+            )
+
+            slots = EventSlot.objects.filter(
+                event=event
+            ).order_by("start_time")
+
+            slot = None
+
+            if event.event_type == Event.SLOT:
+                if not slot_id:
+                    form.add_error(None, "Please select a slot.")
+                else:
+                    slot = EventSlot.objects.select_for_update().filter(
+                        id=slot_id,
+                        event=event,
+                    ).first()
+
+                    if slot is None:
+                        form.add_error(None, "Please select a valid slot.")
+                    else:
+                        already_booked = Booking.objects.filter(
+                            slot=slot
+                        ).aggregate(
+                            total=models.Sum("quantity")
+                        )["total"] or 0
+
+                        if quantity > slot.capacity - already_booked:
+                            form.add_error(
+                                "quantity",
+                                "Not enough places remain in this slot.",
+                            )
+
+            elif quantity > event.available_tickets:
+                form.add_error(
+                    "quantity",
+                    "Not enough tickets are available.",
+                )
+
+            if not form.errors:
+                wallet, created = Wallet.objects.get_or_create(
+                    user=request.user
+                )
+
+                wallet = Wallet.objects.select_for_update().get(
+                    id=wallet.id
+                )
+
+                total_price = event.price * quantity
+
+                if wallet.balance < total_price:
+                    form.add_error(
+                        None,
+                        "Insufficient wallet balance. Please add money.",
+                    )
+                else:
+                    Wallet.objects.filter(pk=wallet.pk).update(
+                        balance=F("balance") - total_price
+                    )
+
+                    if event.event_type == Event.TICKET:
+                        Event.objects.filter(pk=event.pk).update(
+                            available_tickets=(
+                                F("available_tickets") - quantity
+                            )
+                        )
+
+                    Booking.objects.create(
+                        user=request.user,
+                        event=event,
+                        slot=slot,
+                        quantity=quantity,
+                        total_price=total_price,
+                    )
+
+                    WalletTransaction.objects.create(
+                        wallet=wallet,
+                        transaction_type=WalletTransaction.BOOKING,
+                        amount=total_price,
+                        description=(
+                            f"Booked {quantity} place(s) for "
+                            f"{event.description[:150]}"
+                        ),
+                    )
+
+                    messages.success(
+                        request,
+                        f"Successfully booked {quantity} place(s) for "
+                        f"{event.description} for {total_price}.",
+                    )
+                    return redirect("event_list")
+
+    else:
+        event = get_object_or_404(Event, id=event_id)
+
+    slots = EventSlot.objects.filter(
+        event=event
+    ).order_by("start_time")
 
     return render(
         request,
@@ -355,6 +371,8 @@ def book_event(request, event_id):
             "slots": slots,
         },
     )
+
+
 @login_required
 def my_bookings(request):
     if request.user.groups.filter(name="Organizations").exists():
