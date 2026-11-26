@@ -12,7 +12,7 @@
     <li><strong>Total events:</strong> {{ total_events }}</li>
     <li><strong>Total bookings:</strong> {{ total_bookings }}</li>
     <li><strong>Total tickets / places booked:</strong> {{ total_places_booked }}</li>
-    <li><strong>Total booking revenue:</strong> ₹{{ total_revenue|floatformat:2 }}</li>
+    <li><strong>Total booking revenue:</strong>  {{ total_revenue|floatformat:2 }}</li>
     <li><strong>Consumed bookings:</strong> {{ consumed_bookings }}</li>
     <li><strong>Pending bookings:</strong> {{ pending_bookings }}</li>
 </ul>
@@ -35,7 +35,7 @@
 
     <p><strong>Bookings:</strong> {{ event.total_bookings }}</p>
     <p><strong>Places booked:</strong> {{ event.places_booked }}</p>
-    <p><strong>Booking revenue:</strong> ₹{{ event.booking_revenue|floatformat:2 }}</p>
+    <p><strong>Booking revenue:</strong>  {{ event.booking_revenue|floatformat:2 }}</p>
 
     {% if event.event_type == "TICKET" %}
         <p><strong>Tickets remaining:</strong> {{ event.remaining_inventory }}</p>

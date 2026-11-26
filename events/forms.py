@@ -16,7 +16,7 @@ class EventForm(forms.ModelForm):
         labels = {
             "description": "Event Name / Description",
             "event_type": "Booking Type",
-            "price": "Price per ticket / place (₹)",
+            "price": "Price per ticket / place ( )",
             "available_tickets": "Total Available Tickets",
         }
 

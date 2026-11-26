@@ -163,7 +163,7 @@ def add_money(request):
 
             messages.success(
                 request,
-                f"₹{amount} added to your wallet successfully!",
+                f" {amount} added to your wallet successfully!",
             )
             return redirect("home")
     else:

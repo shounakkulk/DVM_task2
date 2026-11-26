@@ -13,7 +13,7 @@
         <p><strong>Booking ID:</strong> {{ booking.id }}</p>
         <p><strong>Customer:</strong> {{ booking.user.username }}</p>
         <p><strong>Quantity:</strong> {{ booking.quantity }}</p>
-        <p><strong>Total paid:</strong> ₹{{ booking.total_price }}</p>
+        <p><strong>Total paid:</strong>  {{ booking.total_price }}</p>
         <p>
             <strong>Booking date:</strong>
             {{ booking.created_at|date:"d M Y, h:i A" }}
