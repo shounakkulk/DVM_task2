@@ -12,8 +12,6 @@ class SimpleMiddleware:
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-
-        response = self.get_response(request)
         request_id = str(uuid.uuid4())
         request.request_id = request_id
 
